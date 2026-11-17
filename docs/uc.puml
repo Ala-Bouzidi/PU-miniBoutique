@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+actor Client
+actor Administrateur
+actor "Prestataire de paiement" as PSP
+rectangle "Mini-boutique en ligne" {
+ usecase "UC1 Consulter les produits" as UC1
+ usecase "UC2 Gérer le panier" as UC2
+ usecase "UC3 Passer commande" as UC3
+ usecase "UC4 Payer une commande" as UC4
+ usecase "UC5 Suivre une commande" as UC5
+}
+Client --> UC1
+Client --> UC2
+Client --> UC3
+Client --> UC4
+Client --> UC5
+UC4 -- PSP
+@enduml

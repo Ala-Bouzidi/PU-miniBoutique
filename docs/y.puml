@@ -1,0 +1,12 @@
+@startuml
+title Modèle en Y — Mini-boutique en ligne
+top to bottom direction
+skinparam linetype ortho
+rectangle "BRANCHE FONCTIONNELLE\nVision + diagramme UC\nUC4 : payer une commande" as F #DCEAFF
+rectangle "BRANCHE TECHNIQUE\nArchitecture en couches\nAPI et simulateur de paiement\nBase SQLite, CI" as T #DDF3E7
+rectangle "FUSION : conception UC4\nScénario métier + architecture" as M #FFF0CB
+rectangle "RÉALISATION ET VALIDATION\nCode, tests unitaires et intégration\nRevue croisée (à effectuer)" as R #EAE1FA
+F -down-> M
+T -down-> M
+M -down-> R
+@enduml
