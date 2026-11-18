@@ -1,27 +1,45 @@
+
 @startuml
-title UC4 — Payer une commande (simulation)
+title UC4 - Payer une commande
+
 actor Client
-participant "Contrôleur HTTP" as C
+participant "Controleur HTTP" as C
 participant "OrderService" as S
 participant "Repository" as R
 participant "FakePaymentGateway" as P
 database SQLite
+
 Client -> C : POST /api/orders/{id}/pay
 C -> S : pay(id, success)
 S -> R : get_order(id)
-R -> SQLite : SELECT order
-SQLite --> R : order
-R --> S : order
-alt commande PENDING
- S -> P : charge(id, montant, success)
- P --> S : approved, reference
- S -> R : settle(id, approved, ref)
- R -> SQLite : UPDATE order (+ stock si refus)
- SQLite --> R : confirmation
- R --> S : order
-else déjà finalisée
- note over S : Retour idempotent
+R -> SQLite : SELECT commande
+SQLite --> R : commande
+R --> S : commande
+
+alt Commande PENDING
+    S -> P : charge(id, montant, success)
+    P --> S : resultat du paiement
+
+    alt Paiement accepte
+        S -> R : settle(id, true, reference)
+        R -> SQLite : UPDATE status = PAID
+        SQLite --> R : confirmation
+        R --> S : commande PAID
+    else Paiement refuse
+        S -> R : settle(id, false, reference)
+        R -> SQLite : UPDATE statut et restituer stock
+        SQLite --> R : confirmation
+        R --> S : commande non payee
+    end
+
+else Commande deja traitee
+    note over S
+      Aucun nouveau paiement
+      Idempotence
+    end note
 end
-S --> C : order
-C --> Client : HTTP 200 + statut
+
+S --> C : resultat
+C --> Client : Reponse HTTP + statut
+
 @enduml
